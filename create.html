@@ -1,0 +1,74 @@
+<html>
+<title>Creating This Website</title>
+<header>Using AWS To Create A Website
+</header>
+<body>
+<p>I wanted to try and see how easy it would be to setup a website using AWS from scratch. Keep in mind I have never done this before. I do have working knowledge of S3 but really haven't used it for more than general storage. On this page I will document my journey of creating this website.
+</p>
+<p>Step #1</p>
+<p>Create AWS account<br/><br/>
+In all fairness I already had this created for my AWS Associate Architecture Certificate I am studying. I am taking courses from A Cloud Guru. That is where some of my basic understanding is coming from.
+</p>
+<p>Step #2</p>
+<p>Obtain Domain Name<br/><br/>
+I used Route53 for this. It was pretty simple. I looked up my name, as that is what I wanted as a domain name, and searched. For $12 I was able to purchase my domain for a year. 
+</p>
+<p>Step #3</p>
+<p>Create 2 S3 Buckets<br/><br/>
+One bucket is the root bucket and is named &lt;domain.com&gt;. The other is for redirecting to the root and is named &lt;www.domain.com&gt;. To be honest I am not 100% clear on why this needs to bed done but I followed the directions from Amazon tutorial and that is what they had me do.<br/><br/>
+Be sure to set the permissions to the bucket to be Readable by the public, otherwise no one will be able to access your website. The rest of the settings can be left to their defaults for now. 
+</p>
+<p>Step #4</p>
+<p>Set Static Website Hosting<br/><br/>
+Head over to the properties of the root bucket. Remember this is the &lt;domain.com&gt; bucket from Step #3. Enable the Static website hosting option. Set the Index page to your main website page. Usually this is called Index.html but it does not have to be. <br/><br/>
+Optionally, while you are here, you can turn on Logging if you would like to track activity. I would recommend turning it on.  You cannot turn it off but you can disable it if you decide you no longer want the logging.
+</p>
+<p>Step #5</p>
+<p>Redirect 2ND S3 Bucket<br/><br/>
+Same thing here. Head over to the properties of the 2ND bucket, &lt;www.domain.com&gt;. Under the Static website hosting option select <b>Redirect requests</b>. Select the name of the root bucket and click Save. No need to enter a protocol at this point as we have not setup a certificate.<br/><br/>
+No Logging for this bucket as all traffic will be bounced to your root bucket and logged there.
+</p>
+<p>At this point your website is not yet accessible, unless you know what you are doing with DNS and have your domain pointing to your S3 buckets already. If not, we need to have your domain pointed to your S3 bucket. I have only done this with Route53, so I am not sure how to do it if you registered your domain with another register.
+</p>
+<p>Step #6</p>
+<p>Create a Hosted Zone<br/><br/>
+Great news, if you created your domain with Route53, Amazon has already done this for you. This step is done. I have not gone through the process manually so I am not sure how to setup the Hosted Zone. Maybe I will try later.   
+</p>
+<p>Step #7</p>
+<p>Setup an Alias<br/><br/>
+This is the critical step to connect your domain to your website. In Route53, select the <b>Hosted Zones</b> option. Now select the domain name you want to configure. Click on the <b>Go to Record Sets</b> button.<br/><br/>
+You will see that there are already 2 Record Sets existing. Types NS and SOA. These are created by Amazon. Do not change them or delete them unless you know what you are doing. <br/><br/>  
+Now we can create 2 aliases; one for each of our S3 buckets. Start with the root bucket. Click the <b>Create Record Set</b> button. <br/>
+<ul>
+<li>Name: Leave this empty-cells
+<li>Type: Select option "A - IPv4 address"
+<li>Alias: Select "Yes"
+<li>Alias Target: Select your Root bucket name
+<li>Routing Policy: Leave it set to "Simple"
+<li>Evaluate Target Health: Select "Yes"
+</ul>
+Click create and you have now setup your first alias name. Now your domain is connected to you root bucket. If you had content in the root folder you could go to a browser and type in your root folder name and it would be displayed. Cool right, almost there. The settings take a few seconds to take effect. It shouldn't take more than 30 seconds. If you try and view your content and you get a server not found error do not fear, give the system a little more time to propigate the changes and try again.I do not know what will display if you do not have content. I will try it soon and update. Now let's setup the alias to the 2ND bucket. The process is exactly the same, we are just going to change the <b>Name</b> and <b>Alias Target</b>. <br/><br/>
+Click the <b>Create Record Set</b> button. <br/>
+<ul>
+<li>Name: Enter "www"
+<li>Type: Select option "A - IPv4 address"
+<li>Alias: Select "Yes"
+<li>Alias Target: Select your 2ND bucket name
+<li>Routing Policy: Leave it set to "Simple"
+<li>Evaluate Target Health: Select "Yes"
+</ul>
+Click create and you have now setup your 2ND alias name. Again, if you had content in the root folder you could go to a browser and type in your 2ND folder name and it would be displayed.
+</p>
+<p>Step #8</p>
+<p>Content of Website<br/><br/>
+Amazon's tutorial actually has this step earlier in the process but I opted to move it to the last step becuase now all you have to do is save an Index.html page to your root bucket and you have a website. Now if you already have a website you can upload it all to the root bucket and you are done. If not, create the basics, upload and you are in business. 
+</p>
+<!--
+<p>Step #9</p>
+<p><br/><br/>
+  
+</p>
+-->
+<p><a href="index.html">BACK to Index page</a>
+</body>
+</html>
